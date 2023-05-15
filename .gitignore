@@ -1,0 +1,21 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs
+/Mango.MessageBus/bin/Debug/net6.0
+/Mango.MessageBus/obj
+/Mango.Services.CouponAPI/bin/Debug/net6.0
+/Mango.Services.CouponAPI/obj
+*.user
+/Mango.Services.OrderAPI/bin/Debug/net6.0
+/Mango.Services.OrderAPI/obj
+/Mango.Services.ProductAPI/obj
+/Mango.Services.ProductAPI/bin/Debug/net6.0
+/Mango.Services.ShoppingCartAPI/bin/Debug/net6.0
+/Mango.Services.ShoppingCartAPI/obj
+/Mango.Web/bin/Debug/net6.0
+/Mango.Web/obj
+/Mongo.Services.Identity/bin/Debug/net6.0
+/Mongo.Services.Identity/obj
+/Mongo.Services.Identity/keys
