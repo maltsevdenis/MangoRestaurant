@@ -19,3 +19,7 @@
 /Mongo.Services.Identity/bin/Debug/net6.0
 /Mongo.Services.Identity/obj
 /Mongo.Services.Identity/keys
+/Mango.Services.PaymentAPI/bin/Debug/net6.0
+/Mango.Services.PaymentAPI/obj
+/PaymentProcessor/bin/Debug/net6.0
+/PaymentProcessor/obj
