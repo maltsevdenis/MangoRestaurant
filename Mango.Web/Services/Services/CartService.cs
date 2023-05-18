@@ -1,8 +1,6 @@
 ﻿using Mango.Web.Models;
 using Mango.Web.Services.IServices;
 
-using Newtonsoft.Json.Linq;
-
 namespace Mango.Web.Services.Services;
 
 public class CartService : BaseService, ICartService
