@@ -50,11 +50,11 @@ public class AzureServiceBusConsumerOrder : IAzureServiceBusConsumerOrder
 
     public async Task Start()
     {
-        checkOutProcessor.ProcessMessageAsync += OncheckOutMessageReceived;
+        checkOutProcessor.ProcessMessageAsync += OnCheckOutMessageReceived;
         checkOutProcessor.ProcessErrorAsync += ErrorHandler;
         await checkOutProcessor.StartProcessingAsync();
 
-        orderUpdatePaymentStatusProcessor.ProcessMessageAsync += OrderPaymentUpdateReceived;
+        orderUpdatePaymentStatusProcessor.ProcessMessageAsync += OnOrderPaymentUpdateReceived;
         orderUpdatePaymentStatusProcessor.ProcessErrorAsync += ErrorHandler;
         await orderUpdatePaymentStatusProcessor.StartProcessingAsync();
     }
@@ -74,7 +74,7 @@ public class AzureServiceBusConsumerOrder : IAzureServiceBusConsumerOrder
         return Task.CompletedTask;
     }
 
-    private async Task OncheckOutMessageReceived(ProcessMessageEventArgs args)
+    private async Task OnCheckOutMessageReceived(ProcessMessageEventArgs args)
     {
         var message = args.Message;
         var body = Encoding.UTF8.GetString(message.Body);
@@ -123,7 +123,8 @@ public class AzureServiceBusConsumerOrder : IAzureServiceBusConsumerOrder
             CVV = orderHeader.CVV,
             ExpiryMonthYear = orderHeader.ExpiryMonthYear,
             OrderId = orderHeader.OrderHeaderId,
-            OrderTotal = orderHeader.OrderTotal
+            OrderTotal = orderHeader.OrderTotal,
+            Email = orderHeader.Email
         };
 
         try
@@ -137,7 +138,7 @@ public class AzureServiceBusConsumerOrder : IAzureServiceBusConsumerOrder
         }
     }
 
-    private async Task OrderPaymentUpdateReceived(ProcessMessageEventArgs args)
+    private async Task OnOrderPaymentUpdateReceived(ProcessMessageEventArgs args)
     {
         var message = args.Message;
         var body = Encoding.UTF8.GetString(message.Body);

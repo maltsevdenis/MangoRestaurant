@@ -23,3 +23,5 @@
 /Mango.Services.PaymentAPI/obj
 /PaymentProcessor/bin/Debug/net6.0
 /PaymentProcessor/obj
+/Mango.Services.Email/bin/Debug/net6.0
+/Mango.Services.Email/obj
