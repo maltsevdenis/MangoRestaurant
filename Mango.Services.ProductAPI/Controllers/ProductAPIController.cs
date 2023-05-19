@@ -1,5 +1,9 @@
-﻿using Mango.Services.ProductAPI.Models.Dto;
+﻿using Mango.Services.ProductAPI.CQRS.Commands;
+using Mango.Services.ProductAPI.CQRS.Queries;
+using Mango.Services.ProductAPI.Models.Dto;
 using Mango.Services.ProductAPI.Repository;
+
+using MediatR;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,13 +13,15 @@ namespace Mango.Services.ProductAPI.Controllers;
 [Route("api/products")]
 public class ProductAPIController : ControllerBase
 {
+    private IMediator _mediator;
     protected ResposeDto _response;
     private IProductRepository _productRepository;
 
-    public ProductAPIController(IProductRepository productRepository)
+    public ProductAPIController(IProductRepository productRepository, IMediator mediator)
     {
         _productRepository = productRepository;
         _response = new ResposeDto();
+        _mediator = mediator;
     }
 
     [HttpGet]
@@ -23,7 +29,7 @@ public class ProductAPIController : ControllerBase
     {
         try
         {
-            IEnumerable<ProductDto> productsDtos = await _productRepository.GetProducts();
+            IEnumerable<ProductDto> productsDtos = await _mediator.Send(new GetProductsQuery());
             _response.Result = productsDtos; 
         }
         catch (Exception ex) 
@@ -41,7 +47,7 @@ public class ProductAPIController : ControllerBase
     {
         try
         {
-            ProductDto productDto = await _productRepository.GetProductById(id);
+            ProductDto productDto = await _mediator.Send(new GetProductByIdQuery { ProductId = id});
             _response.Result = productDto;
         }
         catch (Exception ex)
@@ -59,7 +65,7 @@ public class ProductAPIController : ControllerBase
     {
         try
         {
-            ProductDto model = await _productRepository.CreateUpdateProduct(productDto);
+            ProductDto model = await _mediator.Send(new CreateUpdateProductCommand { Product = productDto });
             _response.Result = model;
         }
         catch (Exception ex)
@@ -76,7 +82,7 @@ public class ProductAPIController : ControllerBase
     {
         try
         {
-            ProductDto model = await _productRepository.CreateUpdateProduct(productDto);
+            ProductDto model = await _mediator.Send(new CreateUpdateProductCommand { Product = productDto });
             _response.Result = model;
         }
         catch (Exception ex)
@@ -96,7 +102,7 @@ public class ProductAPIController : ControllerBase
     {
         try
         {
-            bool isSuccess = await _productRepository.DeleteProduct(id);
+            bool isSuccess = await _mediator.Send(new DeleteProductCommand { ProductId = id });
             _response.Result = isSuccess;
         }
         catch (Exception ex)

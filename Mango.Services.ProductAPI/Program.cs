@@ -4,6 +4,7 @@ using Mango.Services.ProductAPI;
 using Mango.Services.ProductAPI.DbContexts;
 using Mango.Services.ProductAPI.Repository;
 
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -55,6 +56,7 @@ builder.Services.AddSingleton(mapper);
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<ProductRepository>());
 
 builder.Services.AddAuthentication("Bearer").AddJwtBearer("Bearer", options =>
 {
