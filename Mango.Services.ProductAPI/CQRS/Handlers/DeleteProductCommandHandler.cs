@@ -5,11 +5,11 @@ using MediatR;
 
 namespace Mango.Services.ProductAPI.CQRS.Handlers
 {
-    public class DeleteProductHandler : IRequestHandler<DeleteProductCommand, bool>
+    public class DeleteProductCommandHandler : IRequestHandler<DeleteProductCommand, bool>
     {
         private readonly IProductRepository _productRepository;
 
-        public DeleteProductHandler(IProductRepository productRepository)
+        public DeleteProductCommandHandler(IProductRepository productRepository)
         {
             _productRepository = productRepository;
         }

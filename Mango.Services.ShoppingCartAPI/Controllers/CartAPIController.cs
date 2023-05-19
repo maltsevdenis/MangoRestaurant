@@ -1,9 +1,14 @@
 ﻿using Mango.MessageBus;
 using Mango.Services.OrderAPI.Messages;
+using Mango.Services.OrderAPI.Models;
 using Mango.Services.OrderAPI.Models.Dto;
 using Mango.Services.OrderAPI.Repository;
+using Mango.Services.ShoppingCartAPI.CQRS.Commands;
+using Mango.Services.ShoppingCartAPI.CQRS.Queries;
 using Mango.Services.ShoppingCartAPI.Models.Dto;
 using Mango.Services.ShoppingCartAPI.Repository;
+
+using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,14 +18,14 @@ namespace Mango.Services.OrderAPI.Controllers;
 [Route("api/cart")]
 public class CartAPIController : Controller
 {
-    private readonly ICartRepository _cartRepository;
+    private readonly IMediator _mediator;
     private readonly ICouponRepository _couponRepository;
     private readonly IMessageBus _messageBus;
     protected ResponseDto _response;
 
-    public CartAPIController(ICartRepository cartRepository, IMessageBus messageBus, ICouponRepository couponRepository)
+    public CartAPIController(IMediator mediator, IMessageBus messageBus, ICouponRepository couponRepository)
     {
-        _cartRepository = cartRepository;
+        _mediator = mediator;
         _couponRepository = couponRepository;
         _messageBus = messageBus;
         _response = new ResponseDto();
@@ -31,7 +36,7 @@ public class CartAPIController : Controller
     {
         try
         {
-            CartDto cartDto = await _cartRepository.GetCartByUserId(userId);
+            CartDto cartDto = await _mediator.Send(new GetCartByUserIdQuery { UsertId = userId });
             _response.Result = cartDto;
         }
         catch (Exception ex)
@@ -47,7 +52,7 @@ public class CartAPIController : Controller
     {
         try
         {
-            CartDto cartDt = await _cartRepository.CreateUpdateCart(cartDto);
+            CartDto cartDt = await _mediator.Send(new CreateUpdateCartCommand { Cart = cartDto });
             _response.Result = cartDt;
         }
         catch (Exception ex)
@@ -63,7 +68,7 @@ public class CartAPIController : Controller
     {
         try
         {
-            CartDto cartDt = await _cartRepository.CreateUpdateCart(cartDto);
+            CartDto cartDt = await _mediator.Send(new CreateUpdateCartCommand { Cart = cartDto });
             _response.Result = cartDt;
 
         }
@@ -77,11 +82,11 @@ public class CartAPIController : Controller
     }
 
     [HttpPost("RemoveCart")]
-    public async Task<object> RemoveCart([FromBody]int cartId)
+    public async Task<object> RemoveCart([FromBody] int cartId)
     {
         try
         {
-            bool isSuccess = await _cartRepository.RemoveFromCart(cartId);
+            bool isSuccess = await _mediator.Send(new RemoveFromCartCommand { CartId = cartId });
             _response.Result = isSuccess;
 
         }
@@ -99,7 +104,7 @@ public class CartAPIController : Controller
     {
         try
         {
-            bool isSuccess = await _cartRepository.ApplyCoupon(cartDto.CartHeader.UserId, cartDto.CartHeader.CouponCode);
+            bool isSuccess = await _mediator.Send(new ApplyCouponCommand { UserId = cartDto.CartHeader.UserId, CouponCode = cartDto.CartHeader.CouponCode });
             _response.Result = isSuccess;
 
         }
@@ -117,7 +122,7 @@ public class CartAPIController : Controller
     {
         try
         {
-            bool isSuccess = await _cartRepository.RemoveCoupon(userId);
+            bool isSuccess = await _mediator.Send(new RemoveCouponCommand { UserId = userId});
             _response.Result = isSuccess;
 
         }
@@ -135,8 +140,8 @@ public class CartAPIController : Controller
     {
         try
         {
-            CartDto cartDto = await _cartRepository.GetCartByUserId(checkoutHeader.UserId);
-            
+            CartDto cartDto = await _mediator.Send(new GetCartByUserIdQuery { UsertId = checkoutHeader.UserId });
+
             if (cartDto == null)
             {
                 return BadRequest();
@@ -148,7 +153,7 @@ public class CartAPIController : Controller
                 if (checkoutHeader.DiscountTotal != coupon.DiscountAmount)
                 {
                     _response.IsSuccess = false;
-                    _response.ErrorMessages = new List<string>() {"Coupon Price has changed, please confirm"};
+                    _response.ErrorMessages = new List<string>() { "Coupon Price has changed, please confirm" };
                     _response.DisplayMessage = "Coupon Price has changed, please confirm";
                     return _response;
                 }
@@ -158,7 +163,7 @@ public class CartAPIController : Controller
 
             // logic to add message to process order.
             await _messageBus.PublishMessage(checkoutHeader, "checkoutqueue");
-            await _cartRepository.ClearCart(checkoutHeader.UserId);
+            await _mediator.Send(new ClearCartCommand { UserId = checkoutHeader.UserId });
         }
         catch (Exception ex)
         {

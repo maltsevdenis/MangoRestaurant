@@ -6,11 +6,11 @@ using MediatR;
 
 namespace Mango.Services.ProductAPI.CQRS.Handlers;
 
-public class GetProductsHandler : IRequestHandler<GetProductsQuery, IEnumerable<ProductDto>>
+public class GetProductsQueryHandler : IRequestHandler<GetProductsQuery, IEnumerable<ProductDto>>
 {
     private readonly IProductRepository _productRepository;
 
-    public GetProductsHandler(IProductRepository productRepository)
+    public GetProductsQueryHandler(IProductRepository productRepository)
     {
         _productRepository = productRepository;
     }

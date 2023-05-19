@@ -1,7 +1,6 @@
 ﻿using Mango.Services.ProductAPI.CQRS.Commands;
 using Mango.Services.ProductAPI.CQRS.Queries;
 using Mango.Services.ProductAPI.Models.Dto;
-using Mango.Services.ProductAPI.Repository;
 
 using MediatR;
 
@@ -15,11 +14,9 @@ public class ProductAPIController : ControllerBase
 {
     private IMediator _mediator;
     protected ResposeDto _response;
-    private IProductRepository _productRepository;
 
-    public ProductAPIController(IProductRepository productRepository, IMediator mediator)
+    public ProductAPIController(IMediator mediator)
     {
-        _productRepository = productRepository;
         _response = new ResposeDto();
         _mediator = mediator;
     }
